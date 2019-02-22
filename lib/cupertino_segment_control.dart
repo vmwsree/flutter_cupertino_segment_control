@@ -20,8 +20,14 @@ class SegmentControl extends StatefulWidget {
       : assert(tabs.length > 1 && tabs.length <= 3),
         assert(activeTabIndex <= tabs.length - 1);
 
+
   final List<SegmentControlItem> tabs;
-  final int activeTabIndex;
+  int activeTabIndex;
+
+
+  void set setactiveTabIndex(int i){
+    activeTabIndex=i;
+  }
 
   @override
   _SegmentControlState createState() => new _SegmentControlState();
@@ -45,7 +51,7 @@ class _SegmentControlState extends State<SegmentControl>
       for (int i = 0; i < widget.tabs.length; i++) {
         SegmentControlItem t = widget.tabs[i];
         if (t.title == title) {
-          _activeTabIndex = i;
+          widget.setactiveTabIndex = i;
         }
       }
     });
@@ -53,13 +59,13 @@ class _SegmentControlState extends State<SegmentControl>
 
   @override
   Widget build(BuildContext context) {
-    Widget activeTab = widget.tabs[_activeTabIndex].content;
+    Widget activeTab = widget.tabs[widget.activeTabIndex].content;
 
     List<_SegmentControlItem> list = <_SegmentControlItem>[];
 
     for (int i = 0; i < widget.tabs.length; i++) {
       SegmentControlItem tap = widget.tabs[i];
-      bool isActive = tap == widget.tabs[_activeTabIndex];
+      bool isActive = tap == widget.tabs[widget.activeTabIndex];
       _ButtonPlace place = _ButtonPlace.start;
 
       if (i > 0 && (widget.tabs.length - 1 == i)) {
@@ -74,13 +80,17 @@ class _SegmentControlState extends State<SegmentControl>
     return new Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        new Padding(
-          child: new Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: list,
-          ),
-          padding: new EdgeInsets.all(12.0),
-        ),
+        Container(
+          child: new Padding(
+              child: new Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: list,
+              ),
+          padding: new EdgeInsets.fromLTRB(12.0,12.0,12.0,0.0),
+        )),
+        SizedBox(height: 12.0,child:Container(decoration: BoxDecoration(
+            border: Border(bottom: BorderSide(
+                width: 0.5, color: const Color(0xFF878787)))),),),
         activeTab,
       ],
     );
@@ -89,8 +99,8 @@ class _SegmentControlState extends State<SegmentControl>
 
 class _SegmentControlItem extends StatefulWidget {
   _SegmentControlItem(this.callbacks, this.buttonTab, this.place, this.isActive,
-      {this.color = CupertinoColors.activeBlue,
-      this.inverseColor = CupertinoColors.white});
+      {this.color = const Color(0xFFFF6E0D),
+        this.inverseColor = CupertinoColors.white});
 
   final double _defaultBorderRadius = 3.0;
 
@@ -138,9 +148,9 @@ class _SegmentControlItemState extends State<_SegmentControlItem> {
       color: widget.isActive ? color : inverseColor,
       border: place == _ButtonPlace.middle
           ? new Border(
-              top: new BorderSide(color: tapDown ? inverseColor : color),
-              bottom: new BorderSide(color: tapDown ? inverseColor : color),
-            )
+        top: new BorderSide(color: tapDown ? inverseColor : color),
+        bottom: new BorderSide(color: tapDown ? inverseColor : color),
+      )
           : new Border.all(color: tapDown ? inverseColor : color),
       borderRadius: radius,
     );
@@ -182,10 +192,11 @@ class _SegmentControlItemState extends State<_SegmentControlItem> {
       },
       child: new Container(
         decoration: _boxDecoration(widget.place),
-        padding: new EdgeInsets.fromLTRB(20.0, 4.0, 20.0, 4.0),
+        padding: new EdgeInsets.fromLTRB(60.0, 4.0, 60.0, 4.0),
         child: new Text(
           widget.buttonTab.title,
-          style: new TextStyle(color: widget.isActive ? inverseColor : color),
+          style: new TextStyle(
+              color: widget.isActive ? inverseColor : color, fontSize: 14.0),
         ),
       ),
     );
